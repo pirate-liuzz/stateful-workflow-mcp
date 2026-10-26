@@ -2,3 +2,4 @@ node_modules/
 dist/
 *.tgz
 .web-port
+.DS_Store
