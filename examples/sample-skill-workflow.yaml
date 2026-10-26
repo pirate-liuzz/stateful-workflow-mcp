@@ -1,0 +1,39 @@
+# Demo 示例:编排真实 Claude Code skill
+# 每步绑一个 skill,server 会提示 agent 按 /skill-name 调用。
+# 注意:这些 skill 是交互式的(可能问你问题),所以是"半自动"——
+# 跑完每步把产出 report 回去,server 给下一步。
+
+name: feature-dev-flow
+description: 一个常见的功能开发流程:讨论 → 规划 → 执行 → 审查
+
+steps:
+  - id: discuss
+    skill: gsd-discuss-phase
+    args: "--analyze"
+    description: 收集上下文
+    instruction: 用 gsd-discuss-phase 收集这个功能的实现上下文和关键决策
+
+  - id: plan
+    skill: gsd-plan-phase
+    description: 规划
+    instruction: 基于上一步的上下文,用 gsd-plan-phase 生成执行计划
+
+  - id: execute
+    skill: gsd-execute-phase
+    description: 执行
+    instruction: 按计划执行实现
+
+  - id: review
+    skill: gsd-code-review
+    description: 审查
+    instruction: 审查刚才的代码实现
+
+# 用法:
+# 1. 把这份 YAML 内容传给 start_workflow 工具
+# 2. 按 server 返回的指令,在对话里调用 /gsd-discuss-phase(它会问你问题)
+# 3. 跑完把产出 report_step_result 回去
+# 4. 重复直到完成
+#
+# ★ 断点恢复演示:
+#    跑到第 2 步时关掉 Claude Code → 重新打开 → list_runs(only_incomplete=true)
+#    → 看到中断的 run → get_run_status 确认该从 plan 继续 → 接着 report 推进

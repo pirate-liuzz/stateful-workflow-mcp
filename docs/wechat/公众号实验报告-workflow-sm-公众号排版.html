@@ -1,0 +1,138 @@
+<!--
+  公众号复制版｜管住 Agent · workflow-sm 实验报告
+  使用方式：在浏览器中打开本文件，确认图片显示后，全选正文复制到公众号编辑器。
+  如公众号未保留本地图片，请先把“公众号素材”中的 PNG 上传至公众号素材库，再将下列 img 的 src 替换为上传后的地址。
+-->
+<section style="max-width:677px;margin:0 auto;padding:8px;box-sizing:border-box;background:#fdfdf8;color:#4d4f46;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;line-height:1.82;">
+
+  <section style="border:1px solid #bfc1b7;border-radius:8px;overflow:hidden;background:#fdfdf8;">
+    <section style="padding:28px 24px 24px;">
+      <section style="display:flex;align-items:center;gap:8px;margin-bottom:22px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:#1e1f23;display:inline-block;"></span>
+        <span style="font-size:10px;font-weight:700;letter-spacing:3px;color:#65675e;">管住 AGENT · 实验记录</span>
+        <span style="flex:1;height:1px;background:#bfc1b7;display:inline-block;"></span>
+        <span style="font-size:10px;font-variant-numeric:tabular-nums;color:#9ea096;">2026.10</span>
+      </section>
+      <section style="display:flex;align-items:stretch;gap:16px;">
+        <section style="flex:1;min-width:0;">
+          <p style="font-size:25px;line-height:1.18;font-weight:800;color:#23251d;letter-spacing:-.7px;margin:0 0 11px;">一次把 Agent 的流程<br><span style="border-bottom:3px solid #ed7b2f;">“管住”</span>的实验</p>
+          <p style="font-size:13px;line-height:1.72;margin:0;color:#65675e;">workflow-sm：把下一步从 Agent 的记忆里拿出来，交给独立状态机校验。</p>
+        </section>
+        <section style="flex:0 0 106px;border:1px dashed #bfc1b7;border-radius:6px;background:#eeefe9;display:flex;align-items:center;justify-content:center;padding:8px;box-sizing:border-box;">
+          <svg width="76" height="76" viewBox="0 0 76 76" role="img" aria-label="四步工作流状态机示意" style="display:block;">
+            <rect x="13" y="13" width="50" height="50" rx="6" fill="#fdfdf8" stroke="#4d4f46" stroke-width="2"></rect>
+            <path d="M22 28h32M22 38h20M22 48h25" stroke="#4d4f46" stroke-width="2" stroke-linecap="round"></path>
+            <circle cx="55" cy="38" r="7" fill="#ed7b2f"></circle>
+            <path d="M52 38l2 2 4-5" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </section>
+      </section>
+    </section>
+    <section style="padding:11px 24px;background:#1e1f23;">
+      <p style="margin:0;color:#fff;font-size:12px;font-weight:600;">不是替 Agent 做事，而是让“做到哪一步”有一个可核对的事实。</p>
+    </section>
+  </section>
+
+  <section style="margin-top:24px;border-left:3px solid #ed7b2f;padding:2px 0 2px 14px;">
+    <p style="margin:0;font-size:15px;line-height:1.86;color:#34352f;">本文是一次本机技术实验记录，不是第三方认证、法律审计意见，也不代表产品已经覆盖所有 Agent、所有桌面端或全部合规要求。</p>
+  </section>
+
+  <section style="margin-top:26px;">
+    <p style="margin:0;font-size:15px;line-height:1.9;text-align:justify;">很多人以为，给 Agent 一份足够详细的提示词，它就会照着做完。实际使用里，更常见的是：它跳过中间核验、重复提交已经完成的步骤；窗口一关，做到哪里也说不清；出了问题以后，只能翻聊天记录猜它到底做过什么。</p>
+    <p style="margin:16px 0 0;font-size:15px;line-height:1.9;text-align:justify;">我想验证一件小而具体的事：<strong style="color:#23251d;">能不能把“下一步该做什么”，从 Agent 的记忆和自觉里拿出来，交给一个独立的状态机来约束？</strong></p>
+  </section>
+
+  <section style="margin-top:34px;display:flex;align-items:center;gap:13px;">
+    <section style="width:37px;text-align:center;flex:0 0 37px;"><p style="margin:0;color:#23251d;font-size:25px;font-weight:800;line-height:1;">01</p><p style="margin:2px 0 0;color:#9ea096;font-size:8px;font-weight:700;letter-spacing:1.5px;">TEST</p></section>
+    <span style="height:37px;width:1px;background:#bfc1b7;"></span>
+    <section><p style="margin:0;color:#23251d;font-size:18px;font-weight:800;">这次实验要验证什么</p><p style="margin:1px 0 0;color:#65675e;font-size:11px;letter-spacing:1px;">先划边界，再讲结果</p></section>
+  </section>
+  <section style="margin-top:18px;background:#eeefe9;border:1px solid #d7d8d0;border-radius:7px;padding:17px 18px;">
+    <p style="margin:0 0 9px;font-size:14px;color:#23251d;font-weight:700;">workflow-sm 是什么？</p>
+    <p style="margin:0;font-size:14px;line-height:1.82;text-align:justify;">一个通过 MCP 接入的有状态工作流引擎。它不替 Agent 调研、写作或改代码；它只保存流程状态，并只把当前允许执行的那一步交给 Agent。</p>
+    <ol style="margin:14px 0 0;padding-left:21px;font-size:14px;line-height:1.9;">
+      <li>Agent 不能越过当前步骤直接“交后面的作业”；</li>
+      <li>流程中断后，进度和已经产出的内容仍能保留；</li>
+      <li>人能从看板实时看到工作流状态；</li>
+      <li>MCP、重试、跳转与并行前置步骤能稳定工作。</li>
+    </ol>
+  </section>
+  <p style="margin:15px 0 0;font-size:13px;line-height:1.8;color:#65675e;">没有验证的内容也要先说清：这不是 Claude、Codex、ZCode 的横向测评；不是自动化 Runner 实验；更不是一份可以用于司法或法律审计的完整证据链。</p>
+
+  <section style="margin-top:34px;display:flex;align-items:center;gap:13px;">
+    <section style="width:37px;text-align:center;flex:0 0 37px;"><p style="margin:0;color:#23251d;font-size:25px;font-weight:800;line-height:1;">02</p><p style="margin:2px 0 0;color:#9ea096;font-size:8px;font-weight:700;letter-spacing:1.5px;">LOAD</p></section>
+    <span style="height:37px;width:1px;background:#bfc1b7;"></span>
+    <section><p style="margin:0;color:#23251d;font-size:18px;font-weight:800;">实验环境与载荷</p><p style="margin:1px 0 0;color:#65675e;font-size:11px;letter-spacing:1px;">一个四步线性流程</p></section>
+  </section>
+  <p style="margin:18px 0 0;font-size:15px;line-height:1.9;text-align:justify;">实验使用项目内置的 <span style="background:#eeefe9;border:1px solid #d7d8d0;border-radius:3px;padding:1px 5px;font-family:Menlo,Monaco,monospace;font-size:12px;color:#23251d;">research-to-report</span> 流程：调研、分析、起草、保存。状态机对外暴露 5 个 MCP 工具，Agent 仍然是具体任务的执行者。</p>
+  <section style="margin-top:18px;border:1px solid #bfc1b7;border-radius:7px;overflow:hidden;background:#fff;">
+    <section style="display:flex;background:#eeefe9;border-bottom:1px solid #bfc1b7;padding:8px 12px;font-size:11px;font-weight:700;color:#65675e;"><span style="width:56px;">顺序</span><span style="width:90px;">步骤</span><span>任务</span></section>
+    <section style="display:flex;padding:9px 12px;border-bottom:1px solid #e5e7e0;font-size:13px;"><span style="width:56px;color:#ed7b2f;font-weight:700;">01</span><span style="width:90px;font-family:Menlo,monospace;color:#23251d;">research</span><span>产出 3 条关键事实</span></section>
+    <section style="display:flex;padding:9px 12px;border-bottom:1px solid #e5e7e0;font-size:13px;"><span style="width:56px;color:#ed7b2f;font-weight:700;">02</span><span style="width:90px;font-family:Menlo,monospace;color:#23251d;">analyze</span><span>提炼 2 条核心洞察</span></section>
+    <section style="display:flex;padding:9px 12px;border-bottom:1px solid #e5e7e0;font-size:13px;"><span style="width:56px;color:#ed7b2f;font-weight:700;">03</span><span style="width:90px;font-family:Menlo,monospace;color:#23251d;">draft</span><span>起草 100 字内段落</span></section>
+    <section style="display:flex;padding:9px 12px;font-size:13px;"><span style="width:56px;color:#ed7b2f;font-weight:700;">04</span><span style="width:90px;font-family:Menlo,monospace;color:#23251d;">save</span><span>确认并保存最终产物</span></section>
+  </section>
+  <section style="margin-top:16px;">
+    <img src="公众号素材/workflow-sm-YAML流程.png" alt="四步 YAML 流程定义" style="display:block;width:100%;height:auto;border:1px solid #bfc1b7;border-radius:7px;box-sizing:border-box;" />
+    <p style="margin:8px 0 0;color:#65675e;font-size:11px;line-height:1.65;text-align:center;">图 1｜实验用四步 YAML 流程定义。顺序写进状态机，而不是让模型“记住”。</p>
+  </section>
+
+  <section style="margin-top:34px;display:flex;align-items:center;gap:13px;">
+    <section style="width:37px;text-align:center;flex:0 0 37px;"><p style="margin:0;color:#23251d;font-size:25px;font-weight:800;line-height:1;">03</p><p style="margin:2px 0 0;color:#9ea096;font-size:8px;font-weight:700;letter-spacing:1.5px;">CHAOS</p></section>
+    <span style="height:37px;width:1px;background:#bfc1b7;"></span>
+    <section><p style="margin:0;color:#23251d;font-size:18px;font-weight:800;">故意让 Agent 乱来</p><p style="margin:1px 0 0;color:#65675e;font-size:11px;letter-spacing:1px;">不只验证“能走通”，还验证“能拒绝”</p></section>
+  </section>
+  <p style="margin:18px 0 0;font-size:15px;line-height:1.9;text-align:justify;">我们故意尝试四类错误：跳到第二步、报告不存在的步骤、重复报告已经完成的步骤，以及跳过中间步骤直接报告第三步。它们都被拒绝；只有按正确顺序报告，流程才会完成。</p>
+  <section style="margin-top:16px;border-left:3px solid #ed7b2f;padding:3px 0 3px 14px;">
+    <p style="margin:0;font-size:15px;color:#23251d;font-weight:700;line-height:1.8;">workflow-sm 不判断 Agent 写得好不好，但会阻止它把流程事实说乱。</p>
+  </section>
+  <section style="margin-top:16px;"><img src="公众号素材/workflow-sm-终端实验结果.png" alt="147 项终端实验结果" style="display:block;width:100%;height:auto;border:1px solid #bfc1b7;border-radius:7px;box-sizing:border-box;" /><p style="margin:8px 0 0;color:#65675e;font-size:11px;line-height:1.65;text-align:center;">图 2｜本轮测试：147 passed，0 failed。通过数对应已编码场景，不等同于全部业务风险已被覆盖。</p></section>
+  <section style="margin-top:20px;border:1px solid #f1c68e;border-radius:7px;overflow:hidden;background:#fffaf2;">
+    <section style="padding:13px 15px;background:#fff1dc;border-bottom:1px solid #f1c68e;"><p style="margin:0;color:#8a4b12;font-size:13px;font-weight:800;">实验 A｜跳步会发生什么？</p></section>
+    <section style="padding:15px;"><p style="margin:0;color:#4d4f46;font-size:14px;line-height:1.82;">先让 Agent 在 <span style="font-family:Menlo,monospace;color:#23251d;">a</span> 还未完成时直接报告 <span style="font-family:Menlo,monospace;color:#23251d;">b</span>，再让它在完成 <span style="font-family:Menlo,monospace;color:#23251d;">a</span> 后跳过 <span style="font-family:Menlo,monospace;color:#23251d;">b</span> 直接报告 <span style="font-family:Menlo,monospace;color:#23251d;">c</span>。两次都被状态机拒绝。</p></section>
+  </section>
+  <section style="margin-top:14px;"><img src="公众号素材/workflow-sm-跳步被拒绝-原始输出.png" alt="跳步被拒绝的实际测试输出" style="display:block;width:100%;height:auto;border:1px solid #bfc1b7;border-radius:7px;box-sizing:border-box;" /><p style="margin:8px 0 0;color:#65675e;font-size:11px;line-height:1.65;text-align:center;">图 3｜跳步测试实际输出节选：直接报告后续步骤、重复报告、乱序报告都被拒绝。</p></section>
+
+  <section style="margin-top:34px;display:flex;align-items:center;gap:13px;">
+    <section style="width:37px;text-align:center;flex:0 0 37px;"><p style="margin:0;color:#23251d;font-size:25px;font-weight:800;line-height:1;">04</p><p style="margin:2px 0 0;color:#9ea096;font-size:8px;font-weight:700;letter-spacing:1.5px;">WEB</p></section>
+    <span style="height:37px;width:1px;background:#bfc1b7;"></span>
+    <section><p style="margin:0;color:#23251d;font-size:18px;font-weight:800;">把流程状态放到看板上</p><p style="margin:1px 0 0;color:#65675e;font-size:11px;letter-spacing:1px;">列表、进行中、倒带、完成：均为原始浏览器截图</p></section>
+  </section>
+  <p style="margin:18px 0 0;font-size:15px;line-height:1.9;text-align:justify;">一条真实演示流程完成第 1 步后停在 <span style="font-family:Menlo,monospace;font-size:13px;color:#23251d;">analyze</span>：看板显示 1/4（25%），保留已完成输出，明确标出当前活跃步骤。随后又分别截取了列表、倒带后与完成态。</p>
+  <section style="margin-top:16px;"><img src="公众号素材/workflow-sm-Web真实截图-运行列表.png" alt="Web 看板运行列表原始截图" style="display:block;width:100%;height:auto;border:1px solid #bfc1b7;border-radius:7px;box-sizing:border-box;" /><p style="margin:8px 0 0;color:#65675e;font-size:11px;line-height:1.65;text-align:center;">图 4｜运行列表：一条 1/4（25%）的流程出现在看板中。</p></section>
+  <section style="margin-top:20px;"><img src="公众号素材/workflow-sm-Web真实截图-进行中详情.png" alt="Web 看板进行中详情原始截图" style="display:block;width:100%;height:auto;border:1px solid #bfc1b7;border-radius:7px;box-sizing:border-box;" /><p style="margin:8px 0 0;color:#65675e;font-size:11px;line-height:1.65;text-align:center;">图 5｜倒带前：research 已完成，analyze 是当前活跃步骤。</p></section>
+  <section style="margin-top:20px;border:1px solid #f1c68e;border-radius:7px;overflow:hidden;background:#fffaf2;"><section style="padding:13px 15px;background:#fff1dc;border-bottom:1px solid #f1c68e;"><p style="margin:0;color:#8a4b12;font-size:13px;font-weight:800;">实验 B｜回滚不是重开</p></section><section style="padding:15px;"><p style="margin:0;color:#4d4f46;font-size:14px;line-height:1.82;">在详情页把目标步骤选为 <span style="font-family:Menlo,monospace;color:#23251d;">research</span>，执行 <span style="font-family:Menlo,monospace;color:#23251d;">rewind</span>。系统将 research 重新激活，并把它之后的步骤还原为待执行；不是另开一条流程，也不是假装已完成的输出还有效。</p></section></section>
+  <section style="margin-top:14px;"><img src="公众号素材/workflow-sm-Web真实截图-倒带后.png" alt="Web 看板倒带后原始截图" style="display:block;width:100%;height:auto;border:1px solid #bfc1b7;border-radius:7px;box-sizing:border-box;" /><p style="margin:8px 0 0;color:#65675e;font-size:11px;line-height:1.65;text-align:center;">图 6｜倒带后：流程回到 research，后续步骤被重置。</p></section>
+  <section style="margin-top:20px;"><img src="公众号素材/workflow-sm-Web真实截图-已完成.png" alt="Web 看板完成态原始截图" style="display:block;width:100%;height:auto;border:1px solid #bfc1b7;border-radius:7px;box-sizing:border-box;" /><p style="margin:8px 0 0;color:#65675e;font-size:11px;line-height:1.65;text-align:center;">图 7｜完成态：四步流程全部完成，步骤状态与输出仍可回看。</p></section>
+
+  <section style="margin-top:34px;display:flex;align-items:center;gap:13px;">
+    <section style="width:37px;text-align:center;flex:0 0 37px;"><p style="margin:0;color:#23251d;font-size:25px;font-weight:800;line-height:1;">05</p><p style="margin:2px 0 0;color:#9ea096;font-size:8px;font-weight:700;letter-spacing:1.5px;">RESULT</p></section>
+    <span style="height:37px;width:1px;background:#bfc1b7;"></span>
+    <section><p style="margin:0;color:#23251d;font-size:18px;font-weight:800;">汇总结果，以及还没做到的事</p><p style="margin:1px 0 0;color:#65675e;font-size:11px;letter-spacing:1px;">结论要和边界放在一起</p></section>
+  </section>
+  <section style="margin-top:18px;border:1px solid #bfc1b7;border-radius:7px;overflow:hidden;background:#fff;">
+    <section style="padding:12px 14px;background:#1e1f23;"><p style="margin:0;color:#fff;font-size:13px;font-weight:700;">本轮验证：147 passed · 0 failed</p></section>
+    <section style="padding:14px;font-size:13px;line-height:1.85;">
+      <p style="margin:0 0 8px;"><strong style="color:#23251d;">覆盖：</strong>核心状态机、持久化、混沌 Agent、MCP 协议、重试/跳转、并行前置步骤、看板与 SSE。</p>
+      <p style="margin:0;"><strong style="color:#23251d;">不代表：</strong>所有真实业务风险已消失，更不代表已形成法律意义上的完整审计证据。</p>
+    </section>
+  </section>
+  <section style="margin-top:16px;background:#fff7ed;border:1px solid #f1c68e;border-radius:7px;padding:16px 17px;">
+    <p style="margin:0 0 8px;color:#8a4b12;font-size:13px;font-weight:800;letter-spacing:.4px;">当前边界</p>
+    <p style="margin:0;color:#5e5548;font-size:13px;line-height:1.85;">它不评价产出质量；不会自动把所有桌面端 Agent 变成受控执行器；也没有覆盖身份、授权、完整输入输出、外部操作的法律级证据链。不同 MCP 客户端能否稳定执行整套协议，仍需要逐个实测。</p>
+  </section>
+
+  <section style="margin-top:34px;border:1px solid #bfc1b7;border-radius:8px;overflow:hidden;background:#fdfdf8;">
+    <section style="padding:20px 20px 18px;">
+      <p style="margin:0 0 8px;color:#ed7b2f;font-size:10px;font-weight:800;letter-spacing:2px;">NEXT · 征集真实场景</p>
+      <p style="margin:0;color:#23251d;font-size:20px;font-weight:800;line-height:1.45;">下一步，想请你一起挑刺。</p>
+      <p style="margin:12px 0 0;color:#4d4f46;font-size:14px;line-height:1.86;">最值得做的不是先堆更多功能，而是把它放进真实任务：代码发布前检查、合规材料整理、研究报告协作，或任何一步都不能漏的工作。</p>
+      <section style="margin-top:14px;padding:14px 15px;background:#eeefe9;border-radius:6px;">
+        <p style="margin:0 0 7px;color:#23251d;font-size:13px;font-weight:700;">留一个你真正遇到过的场景：</p>
+        <p style="margin:0;color:#4d4f46;font-size:13px;line-height:1.85;">你最不希望 Agent 跳过哪一步？哪一次中断最难恢复？状态至少要记录到什么粒度才真的有用？</p>
+      </section>
+    </section>
+    <section style="padding:12px 20px;background:#1e1f23;"><p style="margin:0;color:#fff;font-size:12px;font-weight:600;">欢迎在评论区留下一句话。下一轮实验会把失败、成本和边界一起写出来。</p></section>
+  </section>
+  <p style="margin:24px 0 12px;text-align:center;color:#9ea096;font-size:11px;letter-spacing:.4px;">—— 小小老花猫 · 管住 Agent 系列实验记录</p>
+</section>

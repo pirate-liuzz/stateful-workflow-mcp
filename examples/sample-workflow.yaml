@@ -1,0 +1,27 @@
+# 方式 B 实验载荷 — 一个 4 步线性流程
+# 用于验证:agent 能否被状态机 MCP server 驱动,严格按顺序推进
+name: research-to-report
+description: 从调研到成稿的 4 步流程
+
+steps:
+  - id: research
+    description: 调研主题
+    instruction: >
+      产出一个给定主题的 3 条关键事实(简短即可,这是实验不追求质量)。
+      主题由调用方提供。
+
+  - id: analyze
+    description: 分析事实
+    instruction: >
+      基于上一步 research 的 3 条事实,提炼出 2 个核心洞察。
+      (上一步的 output 会作为你的输入素材)
+
+  - id: draft
+    description: 起草段落
+    instruction: >
+      基于上一步 analyze 的 2 个洞察,写一段 100 字以内的总结段落。
+
+  - id: save
+    description: 保存结果
+    instruction: >
+      把 draft 的段落作为最终产物返回。这一步只是确认收尾。

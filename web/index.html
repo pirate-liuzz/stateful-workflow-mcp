@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>workflow-sm 看板</title>
+<style>
+  :root {
+    --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+    --text: #c9d1d9; --text-dim: #8b949e; --accent: #58a6ff; --accent2: #3fb950;
+    --running: #d29922; --failed: #f85149; --completed: #3fb950;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5;
+    display: flex; height: 100vh; overflow: hidden;
+  }
+  /* 顶栏 */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 44px;
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 16px; gap: 12px; z-index: 10;
+  }
+  .topbar h1 { font-size: 15px; font-weight: 600; }
+  .topbar .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--accent2);
+  }
+  .topbar .dot.offline { background: var(--failed); }
+  .topbar .status-text { color: var(--text-dim); font-size: 12px; }
+  .topbar .spacer { flex: 1; }
+  .topbar button {
+    background: var(--bg3); color: var(--text); border: 1px solid var(--border);
+    padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px;
+  }
+  .topbar button:hover { border-color: var(--accent); }
+  .reconnect-banner {
+    position: fixed; top: 44px; left: 0; right: 0; background: var(--failed);
+    color: #fff; text-align: center; padding: 4px; font-size: 12px; z-index: 9;
+    display: none;
+  }
+  /* 左栏 run 列表 */
+  .sidebar {
+    margin-top: 44px; width: 320px; border-right: 1px solid var(--border);
+    background: var(--bg); overflow-y: auto; flex-shrink: 0;
+  }
+  .sidebar .empty { padding: 24px 16px; color: var(--text-dim); text-align: center; }
+  /* 分组标题:运行中 / 失败 / 已完成 */
+  .group-head {
+    position: sticky; top: 0; z-index: 2;
+    background: var(--bg); padding: 8px 14px 5px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.3px;
+    color: var(--text-dim); text-transform: uppercase;
+    display: flex; align-items: center; gap: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .group-head .count {
+    background: var(--bg3); color: var(--text); padding: 0 6px; border-radius: 8px;
+    font-size: 10px; min-width: 16px; text-align: center;
+  }
+  .group-head.running-head { color: var(--running); }
+  .group-head.interrupted-head { color: var(--text-dim); }
+  .group-head.failed-head { color: var(--failed); }
+  .group-head.completed-head { color: var(--completed); }
+  .run-item {
+    padding: 10px 14px; border-bottom: 1px solid var(--border); cursor: pointer;
+    display: flex; flex-direction: column; gap: 3px; border-left: 3px solid transparent;
+  }
+  .run-item:hover { background: var(--bg2); }
+  .run-item.active { background: var(--bg2); border-left: 3px solid var(--accent); }
+  /* 运行中的 run:左侧黄色条 + 脉冲点 */
+  .run-item.is-running { border-left-color: var(--running); }
+  .run-item.is-running .live-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--running);
+    animation: live-pulse 1.4s ease-in-out infinite; flex-shrink: 0;
+  }
+  .run-item.is-failed { border-left-color: var(--failed); }
+  .run-item.is-interrupted { border-left-color: var(--text-dim); opacity: .85; }
+  @keyframes live-pulse {
+    0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(210,153,34,0.5); }
+    50% { opacity: 0.5; box-shadow: 0 0 0 4px rgba(210,153,34,0); }
+  }
+  .run-item .top { display: flex; align-items: center; gap: 8px; }
+  .run-item .emoji { font-size: 14px; }
+  .run-item .name { font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .run-item .age { color: var(--text-dim); font-size: 11px; }
+  .run-item .meta { color: var(--text-dim); font-size: 11px; display: flex; gap: 8px; }
+  .run-item .meta .pct { color: var(--text); }
+  .run-item.is-running .meta .pct { color: var(--running); font-weight: 600; }
+  .run-item .rid { font-family: monospace; font-size: 11px; color: var(--text-dim); }
+  /* 右栏详情 */
+  .detail {
+    margin-top: 44px; flex: 1; overflow-y: auto; padding: 20px 24px;
+  }
+  .detail .empty { color: var(--text-dim); padding: 40px; text-align: center; }
+  .detail h2 { font-size: 18px; margin-bottom: 4px; }
+  .detail .sub { color: var(--text-dim); font-size: 13px; margin-bottom: 16px; font-family: monospace; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px;
+    font-weight: 600; margin-left: 8px; vertical-align: middle;
+  }
+  .badge.running { background: rgba(210,153,34,0.2); color: var(--running); }
+  .badge.completed { background: rgba(63,185,80,0.2); color: var(--completed); }
+  .badge.failed { background: rgba(248,81,73,0.2); color: var(--failed); }
+  .badge.interrupted { background: rgba(139,148,158,0.2); color: var(--text-dim); }
+  .progress-bar {
+    height: 6px; background: var(--bg3); border-radius: 3px; margin: 12px 0 20px; overflow: hidden;
+  }
+  .progress-bar .fill { height: 100%; background: var(--accent2); transition: width .3s; }
+  /* 步骤行 */
+  .steps { display: flex; flex-direction: column; gap: 8px; }
+  .step {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;
+    transition: border-color .2s;
+  }
+  .step.active-now {
+    border-color: var(--running);
+    box-shadow: 0 0 0 2px rgba(210,153,34,0.25);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 2px rgba(210,153,34,0.15); }
+    50% { box-shadow: 0 0 0 2px rgba(210,153,34,0.45); }
+  }
+  .step .mark { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; line-height: 1.4; }
+  .step .body { flex: 1; min-width: 0; }
+  .step .row1 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .step .id { font-weight: 600; font-family: monospace; }
+  .step .grouptag {
+    font-size: 10px; padding: 1px 6px; border-radius: 4px; color: #fff;
+  }
+  .step .retry-tag {
+    font-size: 11px; color: var(--running); background: rgba(210,153,34,0.15);
+    padding: 1px 6px; border-radius: 4px;
+  }
+  .step .skill-tag {
+    font-size: 10px; padding: 1px 6px; border-radius: 4px;
+    background: var(--bg3); color: var(--accent); font-family: monospace;
+  }
+  .step .desc { color: var(--text-dim); font-size: 12px; margin-top: 2px; }
+  .step .out {
+    margin-top: 6px; font-size: 12px; color: var(--text);
+    background: var(--bg); padding: 6px 8px; border-radius: 4px;
+    white-space: pre-wrap; word-break: break-word; max-height: 60px; overflow: hidden;
+    position: relative; cursor: pointer;
+  }
+  .step .out.expanded { max-height: none; }
+  .step .out .more {
+    position: absolute; bottom: 0; right: 0; background: var(--bg);
+    padding: 0 4px; color: var(--accent); font-size: 11px;
+  }
+  .step .time { color: var(--text-dim); font-size: 11px; margin-top: 4px; }
+  /* 操作区 */
+  .actions { margin-top: 20px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .actions button {
+    background: var(--bg3); color: var(--text); border: 1px solid var(--border);
+    padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;
+  }
+  .actions button:hover { border-color: var(--accent); }
+  .actions button.danger:hover { border-color: var(--failed); }
+  .actions select {
+    background: var(--bg3); color: var(--text); border: 1px solid var(--border);
+    padding: 6px; border-radius: 6px; font-size: 13px;
+  }
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 16px; border-radius: 8px; font-size: 13px; z-index: 20;
+    opacity: 0; transition: opacity .3s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="dot" id="conn-dot"></div>
+    <h1>workflow-sm 看板</h1>
+    <span class="status-text" id="conn-text">已连接</span>
+    <div class="spacer"></div>
+    <button onclick="loadRuns()">刷新列表</button>
+  </div>
+  <div class="reconnect-banner" id="reconnect-banner">连接断开,正在重连…</div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="empty">加载中…</div>
+  </div>
+
+  <div class="detail" id="detail">
+    <div class="empty">← 从左侧选择一个 run 查看详情</div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+let selectedRunId = null;
+let allRuns = [];
+
+// 中断判定:status=running 但闲置超过 10 分钟 → 视为"中断"(没有进程真的在推进它)
+const STALE_MS = 10 * 60 * 1000;
+function idleMs(s) { return Date.now() - s.updatedAt; }
+function isInterrupted(s) { return s.status === 'running' && idleMs(s) > STALE_MS; }
+
+// ---- SSE 实时 ----
+let es;
+function connectSSE() {
+  es = new EventSource('/api/events');
+  es.onopen = () => {
+    document.getElementById('conn-dot').classList.remove('offline');
+    document.getElementById('conn-text').textContent = '已连接';
+    document.getElementById('reconnect-banner').style.display = 'none';
+  };
+  es.addEventListener('change', (e) => {
+    const data = JSON.parse(e.data);
+    loadRuns();                       // 列表可能变
+    if (data.runId === selectedRunId) loadDetail();  // 选中项变 → 重绘详情
+  });
+  es.addEventListener('snapshot', () => { loadRuns(); });
+  es.onerror = () => {
+    document.getElementById('conn-dot').classList.add('offline');
+    document.getElementById('conn-text').textContent = '断开';
+    document.getElementById('reconnect-banner').style.display = 'block';
+    // EventSource 会自动重连,无需手动
+  };
+}
+connectSSE();
+
+// ---- 数据加载 ----
+async function loadRuns() {
+  try {
+    const r = await fetch('/api/runs');
+    allRuns = await r.json();
+    renderSidebar();
+  } catch (e) { console.error(e); }
+}
+
+async function loadDetail() {
+  if (!selectedRunId) return;
+  try {
+    const r = await fetch('/api/runs/' + selectedRunId);
+    if (!r.ok) { selectedRunId = null; renderDetail(); return; }
+    const data = await r.json();
+    renderDetail(data);
+  } catch (e) { console.error(e); }
+}
+
+// ---- 渲染:左栏(按状态分组:运行中 → 失败 → 已完成)----
+function runItemHtml(r) {
+  const s = r.state;
+  const done = s.steps.filter(x => x.status === 'completed').length;
+  const active = (s.activeStepIds || []).length;
+  const age = ageStr(Date.now() - s.startedAt);
+  const pct = Math.round(done / s.steps.length * 100);
+  // 状态修饰类
+  let stateCls = '';
+  let emoji = '⏸️';
+  let staleTag = '';
+  if (s.status === 'running') {
+    if (isInterrupted(s)) {
+      stateCls = 'is-interrupted'; emoji = '⏸️';
+      staleTag = `<span>闲置 ${ageStr(idleMs(s))}</span>`;
+    } else {
+      stateCls = 'is-running'; emoji = '<span class="live-dot"></span>';
+    }
+  }
+  else if (s.status === 'failed') { stateCls = 'is-failed'; emoji = '❌'; }
+  else { emoji = '✅'; }
+  const selCls = s.runId === selectedRunId ? ' active' : '';
+  const prog = active > 1 ? `${done}/${s.steps.length} · 并行${active}` : `${done}/${s.steps.length}`;
+  return `<div class="run-item ${stateCls}${selCls}" onclick="selectRun('${s.runId}')">
+    <div class="top"><span class="emoji">${emoji}</span>
+      <span class="name">${esc(s.workflowName)}</span>
+      <span class="age">${age}前</span></div>
+    <div class="meta"><span class="pct">${prog} (${pct}%)</span>${staleTag}</div>
+    <div class="rid">${s.runId}</div>
+  </div>`;
+}
+
+function renderSidebar() {
+  const el = document.getElementById('sidebar');
+  if (!allRuns || allRuns.length === 0) {
+    el.innerHTML = '<div class="empty">暂无 run<br><br>在 MCP 客户端里调 <code>start_workflow</code> 就会出现</div>';
+    return;
+  }
+  // 分四组:运行中(活跃)→ 中断(闲置过久)→ 失败 → 已完成
+  const running = allRuns.filter(r => r.state.status === 'running' && !isInterrupted(r.state));
+  const interrupted = allRuns.filter(r => isInterrupted(r.state));
+  const failed = allRuns.filter(r => r.state.status === 'failed');
+  const completed = allRuns.filter(r => r.state.status === 'completed');
+  const parts = [];
+  if (running.length) {
+    parts.push(`<div class="group-head running-head">● 运行中 <span class="count">${running.length}</span></div>`);
+    parts.push(running.map(runItemHtml).join(''));
+  }
+  if (interrupted.length) {
+    parts.push(`<div class="group-head interrupted-head">⏸️ 中断 <span class="count">${interrupted.length}</span></div>`);
+    parts.push(interrupted.map(runItemHtml).join(''));
+  }
+  if (failed.length) {
+    parts.push(`<div class="group-head failed-head">✗ 失败 <span class="count">${failed.length}</span></div>`);
+    parts.push(failed.map(runItemHtml).join(''));
+  }
+  if (completed.length) {
+    parts.push(`<div class="group-head completed-head">✓ 已完成 <span class="count">${completed.length}</span></div>`);
+    parts.push(completed.map(runItemHtml).join(''));
+  }
+  el.innerHTML = parts.join('');
+}
+
+// ---- 渲染:右栏详情 ----
+function renderDetail(data) {
+  const el = document.getElementById('detail');
+  if (!data) {
+    el.innerHTML = '<div class="empty">← 从左侧选择一个 run 查看详情</div>';
+    return;
+  }
+  const s = data.state, def = data.def || { steps: [] };
+  const done = s.steps.filter(x => x.status === 'completed').length;
+  const pct = s.steps.length ? (done / s.steps.length * 100) : 0;
+  const activeSet = new Set(s.activeStepIds || []);
+  const defMap = {};
+  (def.steps || []).forEach(d => defMap[d.id] = d);
+
+  const interrupted = isInterrupted(s);
+  const badgeCls = interrupted ? 'interrupted' : s.status;
+  const badgeText = interrupted
+    ? `中断 · 闲置 ${ageStr(idleMs(s))}`
+    : { running: '进行中', completed: '已完成', failed: '已失败' }[s.status];
+
+  const stepsHtml = s.steps.map(st => {
+    const d = defMap[st.id] || {};
+    const mark = st.status === 'completed' ? '✓' : st.status === 'running' ? '▶' : st.status === 'failed' ? '✗' : '·';
+    const isAct = activeSet.has(st.id);
+    const cls = 'step' + (isAct ? ' active-now' : '');
+    const groupTag = d.group ? groupColorTag(d.group) : '';
+    const retryTag = (st.status === 'running' && st.attempts > 0) ? `<span class="retry-tag">重试 ${st.attempts}/${d.max_attempts||1}</span>` : '';
+    const skillTag = d.skill ? `<span class="skill-tag">/${esc(d.skill)}</span>` : '';
+    const outHtml = st.output ? `<div class="out" onclick="this.classList.toggle('expanded')">${esc(st.output)}${st.output.length > 120 ? '<span class="more">展开▾</span>' : ''}</div>` : '';
+    const timeStr = timeRange(st);
+    return `<div class="${cls}">
+      <div class="mark" style="color:${markColor(st.status)}">${mark}</div>
+      <div class="body">
+        <div class="row1"><span class="id">${esc(st.id)}</span>${skillTag}${groupTag}${retryTag}</div>
+        ${d.description ? `<div class="desc">${esc(d.description)}</div>` : ''}
+        ${outHtml}
+        ${timeStr ? `<div class="time">${timeStr}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // rewind 下拉
+  const rewindOpts = s.steps.map(x => `<option value="${x.id}">${x.id}</option>`).join('');
+
+  el.innerHTML = `
+    <h2>${esc(s.workflowName)} <span class="badge ${badgeCls}">${badgeText}</span></h2>
+    <div class="sub">${s.runId} · ${s.steps.length} 步 · ${ageStr(Date.now()-s.startedAt)}前开始</div>
+    <div class="progress-bar"><div class="fill" style="width:${pct}%"></div></div>
+    <div class="steps">${stepsHtml}</div>
+    <div class="actions">
+      <button onclick="loadDetail()">🔄 刷新</button>
+      <button onclick="copyId('${s.runId}')">📋 复制 run_id</button>
+      <button onclick="copyResumePrompt('${s.runId}')">📋 复制续跑提示词</button>
+      <span style="display:flex;align-items:center;gap:4px">
+        <button onclick="doLaunch()">🚀 新窗口续跑</button>
+        <select id="launch-client">
+          <option value="claude">claude</option>
+          <option value="codex">codex</option>
+        </select>
+      </span>
+      <span style="display:flex;align-items:center;gap:4px">
+        <button class="danger" onclick="doRewind()">⏪ rewind 到</button>
+        <select id="rewind-target">${rewindOpts}</select>
+      </span>
+      <button class="danger" onclick="doDelete()">🗑️ 删除此 run</button>
+    </div>`;
+}
+
+// ---- 操作 ----
+function selectRun(id) {
+  selectedRunId = id;
+  renderSidebar();
+  loadDetail();
+}
+
+async function doRewind() {
+  if (!selectedRunId) return;
+  const sel = document.getElementById('rewind-target');
+  const target = sel.value;
+  if (!confirm(`确认倒带 ${selectedRunId} 到步骤 "${target}"?\n该步及之后将全部重置。`)) return;
+  try {
+    const r = await fetch(`/api/runs/${selectedRunId}/rewind`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ to_step_id: target })
+    });
+    const j = await r.json();
+    if (r.ok) { showToast(`✓ 已倒带到 ${target}`); loadDetail(); loadRuns(); }
+    else { showToast('❌ ' + (j.error || '失败')); }
+  } catch (e) { showToast('❌ ' + e.message); }
+}
+
+function copyId(id) {
+  navigator.clipboard.writeText(id).then(() => showToast('✓ 已复制 ' + id));
+}
+
+// 生成带 run_id 的续跑提示词并复制——去 Claude Code / Codex 直接粘贴即可
+function copyResumePrompt(id) {
+  const p =
+`用 workflow-sm 续跑断点 ${id}:
+1. 调用 get_run_status(run_id="${id}"),找到 [▶] 标记的当前步,
+   并阅读之前各步的 output 作为上下文
+2. 执行当前步的任务
+3. 用 report_step_result(run_id="${id}", step_id="当前步id", output="...") 报告推进
+4. 重复直到 completed。严禁跳步、严禁重报已完成的步。`;
+  navigator.clipboard.writeText(p).then(() => showToast('✓ 续跑提示词已复制 → 去 Claude Code/Codex 粘贴'));
+}
+
+// 一键续跑:让 server 开一个新终端窗口,启动 claude/codex 并带上续跑提示词
+async function doLaunch() {
+  if (!selectedRunId) return;
+  const client = document.getElementById('launch-client').value;
+  try {
+    const r = await fetch(`/api/runs/${selectedRunId}/launch`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ client })
+    });
+    const j = await r.json();
+    if (r.ok && j.spawned) showToast(`✓ 已在新的 ${client} 窗口发起续跑,去新窗口看它干活`);
+    else if (r.ok) showToast('✓ 请求成功,但当前环境不支持弹窗(仅 Windows)');
+    else showToast('❌ ' + (j.error || '失败'));
+  } catch (e) { showToast('❌ ' + e.message); }
+}
+
+async function doDelete() {
+  if (!selectedRunId) return;
+  if (!confirm(`确认删除 ${selectedRunId}?\n磁盘上的状态文件会一并删除,不可恢复。`)) return;
+  try {
+    const r = await fetch('/api/runs/' + selectedRunId, { method: 'DELETE' });
+    if (r.ok) {
+      showToast('✓ 已删除 ' + selectedRunId);
+      selectedRunId = null;
+      renderDetail();
+      loadRuns();
+    } else {
+      const j = await r.json().catch(() => ({}));
+      showToast('❌ ' + (j.error || '删除失败'));
+    }
+  } catch (e) { showToast('❌ ' + e.message); }
+}
+
+// ---- 工具函数 ----
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function ageStr(ms) {
+  const s = Math.floor(ms/1000);
+  if (s < 60) return s + '秒';
+  if (s < 3600) return Math.floor(s/60) + '分';
+  if (s < 86400) return Math.floor(s/3600) + '时';
+  return Math.floor(s/86400) + '天';
+}
+function timeRange(st) {
+  if (!st.startedAt) return '';
+  const end = st.completedAt || (st.status === 'running' ? Date.now() : null);
+  if (!end) return `起: ${new Date(st.startedAt).toLocaleTimeString()}`;
+  return `${new Date(st.startedAt).toLocaleTimeString()} → ${new Date(end).toLocaleTimeString()} (${ageStr(end-st.startedAt)})`;
+}
+function markColor(status) {
+  return status === 'completed' ? 'var(--completed)' :
+         status === 'running' ? 'var(--running)' :
+         status === 'failed' ? 'var(--failed)' : 'var(--text-dim)';
+}
+// 给不同 group 分配稳定的颜色
+const GROUP_COLORS = ['#8957e5','#1f6feb','#2cbac4','#db6d28','#238636','#f778ba'];
+function groupColorTag(group) {
+  let h = 0;
+  for (let i = 0; i < group.length; i++) h = (h * 31 + group.charCodeAt(i)) >>> 0;
+  const c = GROUP_COLORS[h % GROUP_COLORS.length];
+  return `<span class="grouptag" style="background:${c}">group: ${esc(group)}</span>`;
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// 首次加载
+loadRuns();
+// 每 30 秒兜底刷新一次(防止 SSE 漏事件,更新"相对时间")
+setInterval(() => { loadRuns(); if (selectedRunId) loadDetail(); }, 30000);
+</script>
+</body>
+</html>

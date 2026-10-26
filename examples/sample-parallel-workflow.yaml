@@ -1,0 +1,44 @@
+# sample-parallel-workflow.yaml — 展示并行组 + 重试 + agent 自主跳转
+#
+# 这个工作流演示三大产品能力:
+#   1. 并行组(group):fetch-a / fetch-b 同属 group "collect",会被同时激活(都 running),
+#      你可以任意顺序 report 它们;组内全部完成后才推进到 merge。
+#   2. 重试(max_attempts):merge 设了 max_attempts: 2,若它 report failure,
+#      状态机会让它重试(最多 2 次);耗尽则整个 run 失败。
+#   3. agent 自主跳转(next_step_id):verify 步可以判断 merge 的结果,若不满意,
+#      在 report 时传 next_step_id: "merge" 回退重做(循环),或传 next_step_id: "collect"
+#      重新抓取。这给了 agent 完全的分支/循环控制权,且无需任何声明式表达式引擎。
+
+name: collect-merge-verify
+description: 并行抓取 → 合并(可重试)→ 校验(agent 可决定回退)
+
+steps:
+  # ↓ 并行组:两个 fetch 同时开始,report 顺序不限
+  - id: fetch-a
+    group: collect
+    description: 抓取数据源 A
+    instruction: 从数据源 A 获取原始数据
+
+  - id: fetch-b
+    group: collect
+    description: 抓取数据源 B
+    instruction: 从数据源 B 获取原始数据
+
+  # ↓ 合并步:允许失败重试 2 次
+  - id: merge
+    description: 合并两路数据
+    instruction: 把 fetch-a 和 fetch-b 的结果合并成统一格式
+    max_attempts: 2
+
+  # ↓ 校验步:agent 在这里根据结果决定走向
+  - id: verify
+    description: 校验合并结果
+    instruction: |
+      检查 merge 的输出是否完整、正确。
+      若合格 → 正常 report(success),推进到 finish。
+      若想重做合并 → report 时传 next_step_id: "merge"(回到 merge 重跑)。
+      若需要重新抓取 → report 时传 next_step_id: "fetch-a"(回到并行组起点)。
+
+  - id: finish
+    description: 收尾
+    instruction: 输出最终结果

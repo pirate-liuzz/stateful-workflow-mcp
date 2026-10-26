@@ -1,0 +1,46 @@
+{
+  "name": "stateful-workflow-mcp",
+  "version": "0.1.0",
+  "description": "Stateful MCP workflow engine: hard-ordered steps, parallel groups, retries, agent-driven goto, checkpoint resume. Runs in any MCP client.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "stateful-workflow-mcp": "dist/server.js"
+  },
+  "files": [
+    "dist",
+    "web",
+    "examples"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "workflow",
+    "state-machine",
+    "orchestration",
+    "checkpoint-resume"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "viewer": "node dist/viewer.js",
+    "dev": "tsx src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build",
+    "prepare": "npm run build",
+    "test": "tsc && node test/test-engine.mjs && node test/test-persistence.mjs && node test/test-agent-chaos.mjs && node test/test-mcp-protocol.mjs && node test/test-retry-goto.mjs && node test/test-parallel.mjs && node test/test-web.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

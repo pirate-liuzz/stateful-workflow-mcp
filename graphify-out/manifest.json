@@ -1,0 +1,182 @@
+{
+  ".claude/settings.local.json": {
+    "mtime": 1787108244.0,
+    "seen": 1788142309.296553,
+    "ast_hash": "e0d9463c8c60677eee31865f0e25dcf8",
+    "semantic_hash": "e0d9463c8c60677eee31865f0e25dcf8"
+  },
+  "demo-artifacts/.claude/settings.local.json": {
+    "mtime": 1785466752.0,
+    "seen": 1788142309.296557,
+    "ast_hash": "fb1d0b0d9c58efc4ee113c25676d456e",
+    "semantic_hash": "fb1d0b0d9c58efc4ee113c25676d456e"
+  },
+  "package.json": {
+    "mtime": 1787028114.0,
+    "seen": 1788142309.296559,
+    "ast_hash": "480ef204d1f73738b4da757fe4f89546",
+    "semantic_hash": "480ef204d1f73738b4da757fe4f89546"
+  },
+  "src/engine.ts": {
+    "mtime": 1787028076.0,
+    "seen": 1788142309.29656,
+    "ast_hash": "bb78c80f518029b24c44816d10a3b767",
+    "semantic_hash": "bb78c80f518029b24c44816d10a3b767"
+  },
+  "src/server.ts": {
+    "mtime": 1787024458.0,
+    "seen": 1788142309.296561,
+    "ast_hash": "6ba81842e7d58e77c54a401e7529f927",
+    "semantic_hash": "6ba81842e7d58e77c54a401e7529f927"
+  },
+  "src/viewer.ts": {
+    "mtime": 1787028108.0,
+    "seen": 1788142309.296562,
+    "ast_hash": "e6e3fea1189b9b69ac9a8c6863d35e3e",
+    "semantic_hash": "e6e3fea1189b9b69ac9a8c6863d35e3e"
+  },
+  "src/web.ts": {
+    "mtime": 1787028836.0,
+    "seen": 1788142309.296563,
+    "ast_hash": "c8763a0370938bcdd8fc87bafa82518d",
+    "semantic_hash": "c8763a0370938bcdd8fc87bafa82518d"
+  },
+  "test-agent-chaos.mjs": {
+    "mtime": 1787024592.0,
+    "seen": 1788142309.2965639,
+    "ast_hash": "8ee23f527f1cf59b4686bfbf1fecb3e5",
+    "semantic_hash": "8ee23f527f1cf59b4686bfbf1fecb3e5"
+  },
+  "test-engine.mjs": {
+    "mtime": 1787027680.0,
+    "seen": 1788142309.296565,
+    "ast_hash": "3a6a631f8d292acca01e0f62a44b855a",
+    "semantic_hash": "3a6a631f8d292acca01e0f62a44b855a"
+  },
+  "test-mcp-protocol.mjs": {
+    "mtime": 1787024604.0,
+    "seen": 1788142309.296566,
+    "ast_hash": "e45bccbf35e2be5c913d99dcc4b1a8b0",
+    "semantic_hash": "e45bccbf35e2be5c913d99dcc4b1a8b0"
+  },
+  "test-parallel.mjs": {
+    "mtime": 1785474024.0,
+    "seen": 1788142309.296567,
+    "ast_hash": "88e77d064b868b7e5e02824ed0e382f1",
+    "semantic_hash": "88e77d064b868b7e5e02824ed0e382f1"
+  },
+  "test-persistence.mjs": {
+    "mtime": 1787028136.0,
+    "seen": 1788142309.2965682,
+    "ast_hash": "488fdc48331b22085867c7aaded9c0c8",
+    "semantic_hash": "488fdc48331b22085867c7aaded9c0c8"
+  },
+  "test-retry-goto.mjs": {
+    "mtime": 1785470056.0,
+    "seen": 1788142309.2965682,
+    "ast_hash": "e6573759403f2a6249a4a7551396b35e",
+    "semantic_hash": "e6573759403f2a6249a4a7551396b35e"
+  },
+  "test-web.mjs": {
+    "mtime": 1787028742.0,
+    "seen": 1788142309.296569,
+    "ast_hash": "e855590a2e022e95d4a88817778f4dce",
+    "semantic_hash": "e855590a2e022e95d4a88817778f4dce"
+  },
+  "tsconfig.json": {
+    "mtime": 1785375170.0,
+    "seen": 1788142309.29657,
+    "ast_hash": "17afa41224a971b45110e212e8e66dfb",
+    "semantic_hash": "17afa41224a971b45110e212e8e66dfb"
+  },
+  "DESIGN-RATIONALE.md": {
+    "mtime": 1785471214.0,
+    "seen": 1788142309.2965708,
+    "ast_hash": "65ba693497b2a114af218e713cdc40c9",
+    "semantic_hash": "65ba693497b2a114af218e713cdc40c9"
+  },
+  "EXPERIMENT-GUIDE.md": {
+    "mtime": 1785375692.0,
+    "seen": 1788142309.296572,
+    "ast_hash": "93f8adc22baea43e8ed577d46a566a8a",
+    "semantic_hash": "93f8adc22baea43e8ed577d46a566a8a"
+  },
+  "EXPERIMENT-REPORT.md": {
+    "mtime": 1785377092.0,
+    "seen": 1788142309.296572,
+    "ast_hash": "fd47cef1405be1f3aaecfb9b6562d411",
+    "semantic_hash": "fd47cef1405be1f3aaecfb9b6562d411"
+  },
+  "OPEN-SOURCE-FEASIBILITY.md": {
+    "mtime": 1785468566.0,
+    "seen": 1788142309.296573,
+    "ast_hash": "f1e1f39545b85e64f335afe3d9fea932",
+    "semantic_hash": "f1e1f39545b85e64f335afe3d9fea932"
+  },
+  "PROJECT-DECISIONS.md": {
+    "mtime": 1787018884.0,
+    "seen": 1788142309.2965739,
+    "ast_hash": "eab76d46926701cd7716e85fb17573cd",
+    "semantic_hash": "eab76d46926701cd7716e85fb17573cd"
+  },
+  "README.md": {
+    "mtime": 1787028216.0,
+    "seen": 1788142309.296575,
+    "ast_hash": "68ced9d22f6725ed923ffe57e1ad6d68",
+    "semantic_hash": "68ced9d22f6725ed923ffe57e1ad6d68"
+  },
+  "VERIFICATION-REPORT.md": {
+    "mtime": 1785467302.0,
+    "seen": 1788142309.296576,
+    "ast_hash": "87e779e4512f063f6bcbf54fb5f1ae0f",
+    "semantic_hash": "87e779e4512f063f6bcbf54fb5f1ae0f"
+  },
+  "demo-artifacts/discuss-CONTEXT.md": {
+    "mtime": 1785390746.0,
+    "seen": 1788142309.296577,
+    "ast_hash": "c6016225fd4cee87732be05bd9229bd6",
+    "semantic_hash": "c6016225fd4cee87732be05bd9229bd6"
+  },
+  "demo-artifacts/execute-LOG.md": {
+    "mtime": 1785390964.0,
+    "seen": 1788142309.296578,
+    "ast_hash": "d37faf16189e3ac4c4c31a9ba775304e",
+    "semantic_hash": "d37faf16189e3ac4c4c31a9ba775304e"
+  },
+  "demo-artifacts/plan-PLAN.md": {
+    "mtime": 1785390858.0,
+    "seen": 1788142309.2965791,
+    "ast_hash": "7a1579ff4036a59ae4ffd1ab96008ccc",
+    "semantic_hash": "7a1579ff4036a59ae4ffd1ab96008ccc"
+  },
+  "demo-artifacts/review-REVIEW.md": {
+    "mtime": 1785391114.0,
+    "seen": 1788142309.29658,
+    "ast_hash": "8b9a612a55189a677e5e842f06ba6c2f",
+    "semantic_hash": "8b9a612a55189a677e5e842f06ba6c2f"
+  },
+  "sample-parallel-workflow.yaml": {
+    "mtime": 1785470250.0,
+    "seen": 1788142309.296581,
+    "ast_hash": "dee4f4a9d5907fee958975bf38f28a90",
+    "semantic_hash": "dee4f4a9d5907fee958975bf38f28a90"
+  },
+  "sample-skill-workflow.yaml": {
+    "mtime": 1785383142.0,
+    "seen": 1788142309.296581,
+    "ast_hash": "c5cdeeb8368f28adb12fb23d08685dc1",
+    "semantic_hash": "c5cdeeb8368f28adb12fb23d08685dc1"
+  },
+  "sample-workflow.yaml": {
+    "mtime": 1785375626.0,
+    "seen": 1788142309.296582,
+    "ast_hash": "a2c39a40d8ebf925d92e468857d478c3",
+    "semantic_hash": "a2c39a40d8ebf925d92e468857d478c3"
+  },
+  "web/index.html": {
+    "mtime": 1787028728.0,
+    "seen": 1788142309.296583,
+    "ast_hash": "a0930351391a5e421a9d500d54523fa5",
+    "semantic_hash": "a0930351391a5e421a9d500d54523fa5"
+  }
+}
